@@ -1,28 +1,33 @@
-FROM node:20.18.1-alpine as build 
-
-WORKDIR /usr/src/app
-
-RUN apk add --update --no-cache \
-    python3 \
-    make \
-    g++
 
 
+FROM python:3.9-alpine as build 
 
-COPY package*.json ./
+WORKDIR /app
 
-RUN npm install --only=production
+RUN apk update \
+    && apk add --no-cache g++ linux-headers \
+    && rm -rf /var/cache/apk/*
 
-FROM alpine::3.21.3
+COPY requirements.txt .
 
-RUN apk add --no-cache nodejs
+RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /usr/src/app
 
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+FROM python:3.9-alpine
+
+WORKDIR /app
+
+RUN apk update \
+    && apk add --no-cache libstdc++ \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=build /usr/local/lib/python3.12/ /usr/local/lib/python3.12/
+
+ENV PYTHONUNBUFFERED=1
+
+ENV DISABLE_PROFILER=1
 
 COPY . .
 
-EXPOSE 7000
-
-ENTRYPOINT [ "node", "server.js" ]
+EXPOSE 8080
+ENTRYPOINT [ "python", "email_server.py" ]
