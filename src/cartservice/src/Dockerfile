@@ -28,7 +28,7 @@ FROM mcr.microsoft.com/dotnet/runtime-deps:9.0.1-noble-chiseled@sha256:6f7466eda
 
 WORKDIR /app
 
-COPY --from=build /app/cartservice .
+COPY --from=build /app/cartservice ./cartservice
 
 EXPOSE 7070
 
@@ -37,4 +37,4 @@ ENV export DOTNET_EnableDiagnostics="0" \
 
 USER 1000
 
-ENTRYPOINT ["/app/cartservice"]
+ENTRYPOINT ["/app/cartservice/cartservice"]
