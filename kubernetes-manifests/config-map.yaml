@@ -3,16 +3,16 @@ kind: ConfigMap
 metadata:
   name: online-botique
 data:
-  DISABLE_PROFILER: 1
-  ENABLE_PROFILER: 0
-  redis-addr: redis-cart:6379
-  PRODUCT_CATALOG_SERVICE_ADDR: productcatalogservice:3550
-  SHIPPING_SERVICE_ADDR: shippingservice:50051
-  PAYMENT_SERVICE_ADDR: paymentservice:50052
-  EMAIL_SERVICE_ADDR: emailservice:5000
-  CURRENCY_SERVICE_ADDR: currencyservice:7000
-  SHOPPING_ASSISTANT_SERVICE_ADDR: shippingservice:50051
-  CART_SERVICE_ADDR: cartservice:7070
-  RECOMMENDATION_SERVICE_ADDR: recommendationservice:8081
-  CHECKOUT_SERVICE_ADDR: checkoutservice:5050
-  AD_SERVICE_ADDR: adservice:9555
+  DISABLE_PROFILER: "1"
+  ENABLE_PROFILER: "0"
+  redis-addr: "redis-cart:6379"
+  PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
+  SHIPPING_SERVICE_ADDR: "shippingservice:50051"
+  PAYMENT_SERVICE_ADDR: "paymentservice:50052"
+  EMAIL_SERVICE_ADDR: "emailservice:5000"
+  CURRENCY_SERVICE_ADDR: "currencyservice:7000"
+  SHOPPING_ASSISTANT_SERVICE_ADDR: "shippingservice:50051"
+  CART_SERVICE_ADDR: "cartservice:7070"
+  RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8081"
+  CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
+  AD_SERVICE_ADDR: "adservice:9555"
