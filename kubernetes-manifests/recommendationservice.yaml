@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recommendationservice
+  template:
+    metadata:
+      labels:
+        app: recommendationservice
+    spec:
+      containers:
+      - name: recommendationservice
+        image: santoshpalla27/online-botique:recommendationservice
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: DISABLE_PROFILER
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: PRODUCT_CATALOG_SERVICE_ADDR              
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendationservice
+  labels:
+    app: recommendationservice
+spec:
+  selector:
+    app: recommendationservice  
+  ports:
+    - protocol: TCP
+      port: 8081  
+      targetPort: 8080
+  type: ClusterIP  

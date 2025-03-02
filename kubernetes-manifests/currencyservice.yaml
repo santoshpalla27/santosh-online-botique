@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currencyservice
+  template:
+    metadata:
+      labels:
+        app: currencyservice
+    spec:
+      containers:
+      - name: currencyservice
+        image: santoshpalla27/online-botique:currencyservice
+        ports:
+        - containerPort: 7070
+        env:
+        - name: PORT
+          value: "7000"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: DISABLE_PROFILER
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currencyservice
+  labels:
+    app: currencyservice
+spec:
+  selector:
+    app: currencyservice  
+  ports:
+    - protocol: TCP
+      port: 7070  
+      targetPort: 7070
+  type: ClusterIP  

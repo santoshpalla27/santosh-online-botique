@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkoutservice
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:
+      containers:
+      - name: checkoutservice
+        image: santoshpalla27/online-botique:checkoutservice
+        ports:
+        - containerPort: 5050
+        env:
+        - name: PORT
+          value: "5050"
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: PRODUCT_CATALOG_SERVICE_ADDR
+        - name: SHIPPING_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: SHIPPING_SERVICE_ADDR
+        - name: PAYMENT_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: PAYMENT_SERVICE_ADDR
+        - name: EMAIL_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: EMAIL_SERVICE_ADDR
+        - name: CURRENCY_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: CURRENCY_SERVICE_ADDR
+        - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: SHOPPING_ASSISTANT_SERVICE_ADDR
+        - name: CART_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: CART_SERVICE_ADDR
+          
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkoutservice
+  labels:
+    app: checkoutservice
+spec:
+  selector:
+    app: checkoutservice  
+  ports:
+    - protocol: TCP
+      port: 5050  
+      targetPort: 5050
+  type: ClusterIP  

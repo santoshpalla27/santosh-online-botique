@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: santoshpalla27/online-botique:frontend
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PORT
+          value: "8080"
+        - name: ENABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: ENABLE_PROFILER
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: PRODUCT_CATALOG_SERVICE_ADDR
+        - name: CURRENCY_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: CURRENCY_SERVICE_ADDR
+        - name: CART_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: CART_SERVICE_ADDR
+        - name: RECOMMENDATION_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: RECOMMENDATION_SERVICE_ADDR
+        - name: SHIPPING_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: SHIPPING_SERVICE_ADDR 
+        - name: CHECKOUT_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: CHECKOUT_SERVICE_ADDR  
+        - name: AD_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: AD_SERVICE_ADDR
+        - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: online-botique
+              key: SHOPPING_ASSISTANT_SERVICE_ADDR
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  selector:
+    app: frontend  
+  ports:
+    - protocol: TCP
+      port: 80  
+      targetPort: 8080
+  type: ClusterIP  

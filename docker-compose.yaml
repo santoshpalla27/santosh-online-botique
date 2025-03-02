@@ -57,7 +57,7 @@ services:
     build:
       context: ./src/emailservice
     ports:
-      - "8080:8080"
+      - "5000:8080"
     environment:
       - PORT=8080
       - DISABLE_PROFILER=1
@@ -80,15 +80,6 @@ services:
       - AD_SERVICE_ADDR=adservice:9555
       - SHOPPING_ASSISTANT_SERVICE_ADDR=shippingservice:50051
       - ENABLE_PROFILER=0
-    networks:
-      - app_network
-
-  loadgenerator:
-    build:
-      context: ./src/loadgenerator
-    environment:
-      - FRONTEND_ADDR=frontend:80
-      - USERS=10
     networks:
       - app_network
 
