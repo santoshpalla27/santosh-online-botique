@@ -7,8 +7,6 @@ RUN apk add --update --no-cache \
     make \
     g++
 
-
-
 COPY package*.json ./
 
 RUN npm install --only=production
