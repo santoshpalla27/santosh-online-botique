@@ -12,6 +12,7 @@ spec:
       labels:
         app: recommendationservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: recommendationservice
         image: santoshpalla27/online-botique:recommendationservice

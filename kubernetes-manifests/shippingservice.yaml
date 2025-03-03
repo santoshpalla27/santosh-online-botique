@@ -12,6 +12,7 @@ spec:
       labels:
         app: shippingservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: shippingservice
         image: santoshpalla27/online-botique:shippingservice

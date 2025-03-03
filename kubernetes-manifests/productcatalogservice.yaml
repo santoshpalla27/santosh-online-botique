@@ -12,6 +12,7 @@ spec:
       labels:
         app: productcatalogservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: productcatalogservice
         image: santoshpalla27/online-botique:productcatalogservice

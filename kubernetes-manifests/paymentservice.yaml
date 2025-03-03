@@ -12,6 +12,7 @@ spec:
       labels:
         app: paymentservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: paymentservice
         image: santoshpalla27/online-botique:paymentservice

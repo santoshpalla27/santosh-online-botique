@@ -12,6 +12,7 @@ spec:
       labels:
         app: checkoutservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: checkoutservice
         image: santoshpalla27/online-botique:checkoutservice

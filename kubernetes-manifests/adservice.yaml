@@ -12,6 +12,7 @@ spec:
       labels:
         app: adservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: adservice
         image: santoshpalla27/online-botique:adservice

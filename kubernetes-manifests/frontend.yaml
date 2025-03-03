@@ -11,7 +11,8 @@ spec:
     metadata:
       labels:
         app: frontend
-    spec:
+    spec: 
+      serviceAccountName: online-botique
       containers:
       - name: frontend
         image: santoshpalla27/online-botique:frontend

@@ -12,6 +12,7 @@ spec:
       labels:
         app: currencyservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: currencyservice
         image: santoshpalla27/online-botique:currencyservice

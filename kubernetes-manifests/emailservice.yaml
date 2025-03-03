@@ -12,6 +12,7 @@ spec:
       labels:
         app: emailservice
     spec:
+      serviceAccountName: online-botique
       containers:
       - name: emailservice
         image: santoshpalla27/online-botique:emailservice
