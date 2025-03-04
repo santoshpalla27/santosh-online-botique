@@ -26,6 +26,7 @@ spec:
             drop:
               - ALL
           privileged: false
+          readOnlyRootFilesystem: true
         image: santoshpalla27/online-botique:frontend
         ports:
         - containerPort: 8080
