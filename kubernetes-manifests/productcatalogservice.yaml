@@ -13,8 +13,18 @@ spec:
         app: productcatalogservice
     spec:
       serviceAccountName: online-botique
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: productcatalogservice
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
         image: santoshpalla27/online-botique:productcatalogservice
         ports:
         - containerPort: 3550

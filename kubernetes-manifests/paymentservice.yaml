@@ -13,8 +13,18 @@ spec:
         app: paymentservice
     spec:
       serviceAccountName: online-botique
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: paymentservice
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
         image: santoshpalla27/online-botique:paymentservice
         ports:
         - containerPort: 50052

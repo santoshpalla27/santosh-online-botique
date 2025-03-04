@@ -13,8 +13,20 @@ spec:
         app: adservice
     spec:
       serviceAccountName: online-botique
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
       containers:
       - name: adservice
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
         image: santoshpalla27/online-botique:adservice
         ports:
         - containerPort: 9555

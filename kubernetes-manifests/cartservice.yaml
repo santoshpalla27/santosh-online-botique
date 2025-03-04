@@ -12,8 +12,19 @@ spec:
       labels:
         app: cartservice
     spec:
+      serviceAccountName: online-botique
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: cartservice
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
         image: santoshpalla27/online-botique:cartservice
         ports:
         - containerPort: 7070
@@ -57,8 +68,18 @@ spec:
         app: redis
     spec:
       serviceAccountName: online-botique
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
       containers:
       - name: redis
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          privileged: false
         image: redis:alpine
         ports:
         - containerPort: 6379
