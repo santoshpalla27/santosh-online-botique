@@ -11,7 +11,7 @@ spec:
     metadata:
       labels:
         app: frontend
-    spec: 
+    spec:
       serviceAccountName: online-botique
       securityContext:
         fsGroup: 1000
@@ -20,6 +20,20 @@ spec:
         runAsNonRoot: true
       containers:
       - name: frontend
+        livenessProbe:
+          httpGet:
+            path: "/_healthz"
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        readinessProbe:
+          httpGet:
+            path: "/_healthz"
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -62,12 +76,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: online-botique
-              key: SHIPPING_SERVICE_ADDR 
+              key: SHIPPING_SERVICE_ADDR
         - name: CHECKOUT_SERVICE_ADDR
           valueFrom:
             configMapKeyRef:
               name: online-botique
-              key: CHECKOUT_SERVICE_ADDR  
+              key: CHECKOUT_SERVICE_ADDR
         - name: AD_SERVICE_ADDR
           valueFrom:
             configMapKeyRef:
@@ -87,9 +101,9 @@ metadata:
     app: frontend
 spec:
   selector:
-    app: frontend  
+    app: frontend
   ports:
     - protocol: TCP
-      port: 80  
+      port: 80
       targetPort: 8080
-  type: ClusterIP  
+  type: ClusterIP

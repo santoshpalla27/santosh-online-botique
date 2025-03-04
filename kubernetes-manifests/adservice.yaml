@@ -20,6 +20,18 @@ spec:
         runAsUser: 1000
       containers:
       - name: adservice
+        readinessProbe:
+          grpc:
+            port: 9555
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 9555
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -43,9 +55,9 @@ metadata:
     app: adservice
 spec:
   selector:
-    app: adservice  
+    app: adservice
   ports:
     - protocol: TCP
-      port: 9555  
+      port: 9555
       targetPort: 9555
-  type: ClusterIP  
+  type: ClusterIP
