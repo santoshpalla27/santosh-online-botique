@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: productcatalogservice
+        readinessProbe:
+          grpc:
+            port: 3550
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 3550
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

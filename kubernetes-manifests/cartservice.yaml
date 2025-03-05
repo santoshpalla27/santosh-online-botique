@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: cartservice
+        readinessProbe:
+          grpc:
+            port: 7070
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 7070
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -77,6 +89,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: redis
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          tcpSocket:
+            port: 6379
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

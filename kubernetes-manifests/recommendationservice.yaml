@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: recommendationservice
+        readinessProbe:
+          grpc:
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: currencyservice
+        readinessProbe:
+          grpc:
+            port: 7000
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 7000
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

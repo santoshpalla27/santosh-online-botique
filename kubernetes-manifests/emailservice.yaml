@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: emailservice
+        readinessProbe:
+          grpc:
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 8080
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -29,7 +41,7 @@ spec:
           readOnlyRootFilesystem: true
         image: santoshpalla27/online-botique:emailservice
         ports:
-        - containerPort: 5000
+        - containerPort: 8080
         env:
         - name: PORT
           value: "8080"

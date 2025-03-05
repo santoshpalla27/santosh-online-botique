@@ -20,6 +20,18 @@ spec:
         runAsNonRoot: true
       containers:
       - name: shippingservice
+        readinessProbe:
+          grpc:
+            port: 50051
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
+        livenessProbe:
+          grpc:
+            port: 50051
+          initialDelaySeconds: 5  
+          periodSeconds: 10  
+          failureThreshold: 3  
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
