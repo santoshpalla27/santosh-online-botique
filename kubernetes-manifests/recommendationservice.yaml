@@ -54,7 +54,14 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: online-botique
-              key: PRODUCT_CATALOG_SERVICE_ADDR              
+              key: PRODUCT_CATALOG_SERVICE_ADDR    
+        resources:
+          requests:
+            cpu: 100m
+            memory: 220Mi
+          limits:
+            cpu: 200m
+            memory: 450Mi          
 ---
 apiVersion: v1
 kind: Service

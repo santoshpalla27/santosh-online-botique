@@ -48,6 +48,13 @@ spec:
             configMapKeyRef:
               name: online-botique
               key: redis-addr
+        resources:
+          requests:
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 128Mi
 
 ---
 apiVersion: v1
