@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.recommendationservice.name }}
+spec:
+  replicas: {{ .Values.recommendationservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.recommendationservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.recommendationservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.recommendationservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.recommendationservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.recommendationservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.recommendationservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.recommendationservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.recommendationservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.recommendationservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.recommendationservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.recommendationservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.recommendationservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.recommendationservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.recommendationservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.recommendationservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.recommendationservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.recommendationservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.recommendationservice.securityContext.capabilities.drop | nindent 14 }}
+          privileged: {{ .Values.recommendationservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.recommendationservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.recommendationservice.image }}
+        ports:
+        - containerPort: {{ .Values.recommendationservice.ports.containerPort }}
+        env:
+        - name: PORT
+          value: "{{ .Values.recommendationservice.env.PORT }}"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.recommendationservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.recommendationservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
+        - name: PRODUCT_CATALOG_SERVICE_ADDR
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.recommendationservice.env.PRODUCT_CATALOG_SERVICE_ADDR.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.recommendationservice.env.PRODUCT_CATALOG_SERVICE_ADDR.valueFrom.configMapKeyRef.key }}
+        resources:
+          requests:
+            cpu: {{ .Values.recommendationservice.resources.requests.cpu }}
+            memory: {{ .Values.recommendationservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.recommendationservice.resources.limits.cpu }}
+            memory: {{ .Values.recommendationservice.resources.limits.memory }}
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.recommendationservice.name }}
+  labels:
+    app: {{ .Values.recommendationservice.name }}
+spec:
+  selector:
+    app: {{ .Values.recommendationservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.recommendationservice.service.port }}
+      targetPort: {{ .Values.recommendationservice.service.targetPort }}
+  type: {{ .Values.recommendationservice.service.type }}
+
+

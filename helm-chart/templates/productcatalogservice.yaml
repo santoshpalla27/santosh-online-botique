@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.productcatalogservice.name }}
+spec:
+  replicas: {{ .Values.productcatalogservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.productcatalogservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.productcatalogservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.productcatalogservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.productcatalogservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.productcatalogservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.productcatalogservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.productcatalogservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.productcatalogservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.productcatalogservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.productcatalogservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.productcatalogservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.productcatalogservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.productcatalogservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.productcatalogservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.productcatalogservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.productcatalogservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.productcatalogservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.productcatalogservice.securityContext.capabilities.drop }}
+          privileged: {{ .Values.productcatalogservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.productcatalogservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.productcatalogservice.image }}
+        ports:
+        - containerPort: {{ .Values.productcatalogservice.ports.containerPort }}
+        env:
+        - name: PORT
+          value: "{{ .Values.productcatalogservice.env.PORT }}"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.productcatalogservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.productcatalogservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
+        resources:
+          requests:
+            cpu: {{ .Values.productcatalogservice.resources.requests.cpu }}
+            memory: {{ .Values.productcatalogservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.productcatalogservice.resources.limits.cpu }}
+            memory: {{ .Values.productcatalogservice.resources.limits.memory }}
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.productcatalogservice.name }}
+  labels:
+    app: {{ .Values.productcatalogservice.name }}
+spec:
+  selector:
+    app: {{ .Values.productcatalogservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.productcatalogservice.service.port }}
+      targetPort: {{ .Values.productcatalogservice.service.targetPort }}
+  type: {{ .Values.productcatalogservice.service.type }}

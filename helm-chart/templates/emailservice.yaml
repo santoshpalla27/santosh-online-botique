@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.emailservice.name }}
+spec:
+  replicas: {{ .Values.emailservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.emailservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.emailservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.emailservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.emailservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.emailservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.emailservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.emailservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.emailservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.emailservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.emailservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.emailservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.emailservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.emailservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.emailservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.emailservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.emailservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.emailservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.emailservice.securityContext.capabilities.drop }}
+          privileged: {{ .Values.emailservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.emailservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.emailservice.image }}
+        ports:
+        - containerPort: {{ .Values.emailservice.ports.containerPort }}
+        env:
+        - name: PORT
+          value: "{{ .Values.emailservice.env.PORT }}"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.emailservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.emailservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
+        resources:
+          requests:
+            cpu: {{ .Values.emailservice.resources.requests.cpu }}
+            memory: {{ .Values.emailservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.emailservice.resources.limits.cpu }}
+            memory: {{ .Values.emailservice.resources.limits.memory }}
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.emailservice.name }}
+  labels:
+    app: {{ .Values.emailservice.name }}
+spec:
+  selector:
+    app: {{ .Values.emailservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.emailservice.service.port }}
+      targetPort: {{ .Values.emailservice.service.targetPort }}
+  type: {{ .Values.emailservice.service.type }}

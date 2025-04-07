@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.paymentservice.name }}
+spec:
+  replicas: {{ .Values.paymentservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.paymentservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.paymentservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.paymentservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.paymentservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.paymentservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.paymentservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.paymentservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.paymentservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.paymentservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.paymentservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.paymentservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.paymentservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.paymentservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.paymentservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.paymentservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.paymentservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.paymentservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.paymentservice.securityContext.capabilities.drop }}
+          privileged: {{ .Values.paymentservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.paymentservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.paymentservice.image }}
+        ports:
+        - containerPort: {{ .Values.paymentservice.ports.containerPort }}
+        env:
+        - name: PORT
+          value: "{{ .Values.paymentservice.env.PORT }}"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.paymentservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.paymentservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
+        resources:
+          requests:
+            cpu: {{ .Values.paymentservice.resources.requests.cpu }}
+            memory: {{ .Values.paymentservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.paymentservice.resources.limits.cpu }}
+            memory: {{ .Values.paymentservice.resources.limits.memory }}
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.paymentservice.name }}
+  labels:
+    app: {{ .Values.paymentservice.name }}
+spec:
+  selector:
+    app: {{ .Values.paymentservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.paymentservice.service.port }}
+      targetPort: {{ .Values.paymentservice.service.targetPort }}
+  type: {{ .Values.paymentservice.service.type }}

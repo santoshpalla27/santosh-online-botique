@@ -1,0 +1,205 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.cartservice.name }}
+spec:
+  replicas: {{ .Values.cartservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.cartservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.cartservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.cartservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.cartservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.cartservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.cartservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.cartservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.cartservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.cartservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.cartservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.cartservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.cartservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.cartservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.cartservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.cartservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.cartservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.cartservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.cartservice.securityContext.capabilities.drop }}
+          privileged: {{ .Values.cartservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.cartservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.cartservice.image }}
+        ports:
+        - containerPort: {{ .Values.cartservice.ports.containerPort }}
+        env:
+        {{- range .Values.cartservice.env }}
+        - name: {{ .name }}
+          valueFrom:
+            configMapKeyRef: 
+              name: {{ .valueFrom.configMapKeyRef.name }}
+              key: {{ .valueFrom.configMapKeyRef.key }}
+        {{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.cartservice.resources.requests.cpu }}
+            memory: {{ .Values.cartservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.cartservice.resources.limits.cpu }}
+            memory: {{ .Values.cartservice.resources.limits.memory }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.cartservice.name }}
+  labels:
+    app: {{ .Values.cartservice.name }}
+spec:
+  selector:
+    app: {{ .Values.cartservice.name }}  
+  ports:
+    - protocol: TCP
+      port: {{ .Values.cartservice.service.port }}  
+      targetPort: {{ .Values.cartservice.ports.containerPort }}
+  type: {{ .Values.cartservice.service.type }}
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.redis.name }}
+spec:
+  replicas: {{ .Values.redis.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.redis.name }}
+    spec:
+      serviceAccountName: {{ .Values.redis.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.redis.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.redis.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.redis.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.redis.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.redis.name }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.redis.readinessProbe.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.redis.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.redis.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.redis.readinessProbe.failureThreshold }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.redis.livenessProbe.tcpSocket.port }}
+          initialDelaySeconds: {{ .Values.redis.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.redis.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.redis.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.redis.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.redis.securityContext.capabilities.drop }}
+          privileged: {{ .Values.redis.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.redis.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.redis.image }}
+        ports:
+        - containerPort: {{ .Values.redis.ports.containerPort }}
+        volumeMounts:
+        - name: {{ .Values.redis.volumeMounts.name }}
+          mountPath: {{ .Values.redis.volumeMounts.mountPath }}
+      volumes:
+      - name: {{ .Values.redis.volumes.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.redis.volumes.persistentVolumeClaim.claimName }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.redis.service.name }}
+  labels:
+    app: {{ .Values.redis.service.name }}
+spec:
+  clusterIP: None  
+  selector:
+    app: {{ .Values.redis.name }}  
+  ports:
+    - protocol: TCP
+      port: {{ .Values.redis.service.port }}        
+      targetPort: {{ .Values.redis.ports.targetPort }} 
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.redis.pv.name }}
+spec:
+  capacity:
+    storage: {{ .Values.redis.pv.storage }}
+  volumeMode: Filesystem
+  accessModes:
+    {{ toYaml .Values.redis.pv.accessModes }}
+  persistentVolumeReclaimPolicy: {{ .Values.redis.pv.persistentVolumeReclaimPolicy }}
+  hostPath:
+    path: /mnt/data/redis
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.redis.pvc.name }}
+spec:
+  accessModes:
+    {{ toYaml .Values.redis.pvc.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.redis.pvc.resources.requests.storage }}
+
+
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: redis
+# spec:
+#   serviceName: redis-cart
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: redis
+#   template:
+#     metadata:
+#       labels:
+#         app: redis
+#     spec:
+#       containers:
+#       - name: redis
+#         image: redis:alpine
+#         ports:
+#         - containerPort: 6379
+#         volumeMounts:
+#         - name: redis-data
+#           mountPath: /data
+#   volumeClaimTemplates:
+#   - metadata:
+#       name: redis-data
+#     spec:
+#       accessModes: [ "ReadWriteOnce" ]
+#       resources:
+#         requests:
+#           storage: 1Gi

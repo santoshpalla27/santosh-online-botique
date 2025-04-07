@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.checkoutservice.name }}
+spec:
+  replicas: {{ .Values.checkoutservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.checkoutservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.checkoutservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.checkoutservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.checkoutservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.checkoutservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.checkoutservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.checkoutservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.checkoutservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.checkoutservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.checkoutservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.checkoutservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.checkoutservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.checkoutservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.checkoutservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.checkoutservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.checkoutservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.checkoutservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.checkoutservice.securityContext.capabilities.drop}}
+          privileged: {{ .Values.checkoutservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.checkoutservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.checkoutservice.image }}
+        ports:
+        - containerPort: {{ .Values.checkoutservice.ports.containerPort }}
+        env:
+{{- range .Values.checkoutservice.env }}
+        - name: {{ .name }}
+{{- if .value }}
+          value: "{{ .value }}"
+{{- end }}
+{{- if .valueFrom }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .valueFrom.configMapKeyRef.name }}
+              key: {{ .valueFrom.configMapKeyRef.key }}
+{{- end }}
+{{- end }}
+        resources:
+          requests:
+            cpu: {{ .Values.checkoutservice.resources.requests.cpu }}
+            memory: {{ .Values.checkoutservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.checkoutservice.resources.limits.cpu }}
+            memory: {{ .Values.checkoutservice.resources.limits.memory }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.checkoutservice.name }}
+  labels:
+    app: {{ .Values.checkoutservice.name }}
+spec:
+  selector:
+    app: {{ .Values.checkoutservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.checkoutservice.service.port }}
+      targetPort: {{ .Values.checkoutservice.ports.containerPort }}
+  type: {{ .Values.checkoutservice.service.type }}

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.adservice.name }}
+spec:
+  replicas: {{ .Values.adservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.adservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.adservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.adservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.adservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.adservice.securityContext.runAsGroup }}
+        runAsNonRoot: {{ .Values.adservice.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.adservice.securityContext.runAsUser }}
+      containers:
+      - name: {{ .Values.adservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.adservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.adservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.adservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.adservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.adservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.adservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.adservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.adservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.adservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.adservice.securityContext.capabilities.drop}}
+          privileged: {{ .Values.adservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.adservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.adservice.image }}
+        ports:
+        - containerPort: {{ .Values.adservice.ports.containerPort }}
+        env:
+        - name: {{ .Values.adservice.env.name}}
+          value: "{{ .Values.adservice.env.value }}"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.adservice.name }}
+  labels:
+    app: {{ .Values.adservice.name }}
+spec:
+  selector:
+    app: {{ .Values.adservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.adservice.ports.containerPort }}
+      targetPort: {{ .Values.adservice.ports.targetPort }}
+  type: {{ .Values.adservice.service.type }}

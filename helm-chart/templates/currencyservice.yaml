@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.currencyservice.name }}
+spec:
+  replicas: {{ .Values.currencyservice.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.currencyservice.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.currencyservice.name }}
+    spec:
+      serviceAccountName: {{ .Values.currencyservice.serviceAccountName }}
+      securityContext:
+        fsGroup: {{ .Values.currencyservice.securityContext.fsGroup }}
+        runAsGroup: {{ .Values.currencyservice.securityContext.runAsGroup }}
+        runAsUser: {{ .Values.currencyservice.securityContext.runAsUser }}
+        runAsNonRoot: {{ .Values.currencyservice.securityContext.runAsNonRoot }}
+      containers:
+      - name: {{ .Values.currencyservice.name }}
+        readinessProbe:
+          grpc:
+            port: {{ .Values.currencyservice.readinessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.currencyservice.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.currencyservice.readinessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.currencyservice.readinessProbe.failureThreshold }}
+        livenessProbe:
+          grpc:
+            port: {{ .Values.currencyservice.livenessProbe.grpc.port }}
+          initialDelaySeconds: {{ .Values.currencyservice.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.currencyservice.livenessProbe.periodSeconds }}
+          failureThreshold: {{ .Values.currencyservice.livenessProbe.failureThreshold }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.currencyservice.securityContext.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              {{ toYaml .Values.currencyservice.securityContext.capabilities.drop }}
+          privileged: {{ .Values.currencyservice.securityContext.privileged }}
+          readOnlyRootFilesystem: {{ .Values.currencyservice.securityContext.readOnlyRootFilesystem }}
+        image: {{ .Values.currencyservice.image }}
+        ports:
+        - containerPort: {{ .Values.currencyservice.ports.containerPort }}
+        env:
+        - name: PORT
+          value: "{{ .Values.currencyservice.env.PORT }}"
+        - name: DISABLE_PROFILER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.currencyservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.currencyservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
+        resources:
+          requests:
+            cpu: {{ .Values.currencyservice.resources.requests.cpu }}
+            memory: {{ .Values.currencyservice.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.currencyservice.resources.limits.cpu }}
+            memory: {{ .Values.currencyservice.resources.limits.memory }}
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.currencyservice.name }}
+  labels:
+    app: {{ .Values.currencyservice.name }}
+spec:
+  selector:
+    app: {{ .Values.currencyservice.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.currencyservice.service.port }}
+      targetPort: {{ .Values.currencyservice.service.targetPort }}
+  type: {{ .Values.currencyservice.service.type }}
