@@ -11,7 +11,7 @@ data:
   PAYMENT_SERVICE_ADDR: "{{ .Values.configmap.data.PAYMENT_SERVICE_ADDR }}"
   EMAIL_SERVICE_ADDR: "{{ .Values.configmap.data.EMAIL_SERVICE_ADDR }}"
   CURRENCY_SERVICE_ADDR: "{{ .Values.configmap.data.CURRENCY_SERVICE_ADDR }}"
-  SHOPPING_SERVICE_ADDR: "{{ .Values.configmap.data.SHOPPING_SERVICE_ADDR }}"
+  SHOPPING_ASSISTANT_SERVICE_ADDR: "{{ values.configmap.data.SHOPPING_ASSISTANT_SERVICE_ADDR }}"
   CART_SERVICE_ADDR: "{{ .Values.configmap.data.CART_SERVICE_ADDR }}"
   RECOMMENDATION_SERVICE_ADDR: "{{ .Values.configmap.data.RECOMMENDATION_SERVICE_ADDR }}"
   CHECKOUT_SERVICE_ADDR: "{{ .Values.configmap.data.CHECKOUT_SERVICE_ADDR }}"
