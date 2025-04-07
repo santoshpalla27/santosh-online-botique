@@ -94,11 +94,11 @@ frontend:
           name: online-botique
           key: AD_SERVICE_ADDR
 
-    - name: SHOPPING_SERVICE_ADDR
+    - name: SHOPPING_ASSISTANT_SERVICE_ADDR
       valueFrom:
         configMapKeyRef:
           name: online-botique
-          key: SHOPPING_SERVICE_ADDR
+          key: SHOPPING_ASSISTANT_SERVICE_ADDR
 
   resources:
     requests:
