@@ -49,8 +49,8 @@ spec:
         - name: DISABLE_PROFILER
           valueFrom:
             configMapKeyRef:
-              name: {{ .Values.shippingservice.env.DISABLE_PROFILER.configMapKeyRef.name }}
-              key: {{ .Values.shippingservice.env.DISABLE_PROFILER.configMapKeyRef.key }}
+              name: {{ .Values.shippingservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.name }}
+              key: {{ .Values.shippingservice.env.DISABLE_PROFILER.valueFrom.configMapKeyRef.key }}
         resources:
           requests:
             cpu: {{ .Values.shippingservice.resources.requests.cpu }}
