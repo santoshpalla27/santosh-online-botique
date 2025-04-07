@@ -374,7 +374,7 @@ configmap:
   data:
     DISABLE_PROFILER: "1"
     ENABLE_PROFILER: "0"
-    redis_addr: "redis-cart:6379"
+    REDIS_ADDR: "redis-cart:6379"
     PRODUCT_CATALOG_SERVICE_ADDR: "productcatalogservice:3550"
     SHIPPING_SERVICE_ADDR: "shippingservice:50051"
     PAYMENT_SERVICE_ADDR: "paymentservice:50052"
