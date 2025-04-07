@@ -41,7 +41,7 @@ spec:
           readOnlyRootFilesystem: {{ .Values.shippingservice.securityContext.readOnlyRootFilesystem }}
         image: {{ .Values.shippingservice.image }}
         ports:
-        - containerPort: {{ .Values.shippingservice.containerPort }}
+        - containerPort: {{ .Values.shippingservice.ports.containerPort }}
           name: grpc
         env:
         - name: PORT
