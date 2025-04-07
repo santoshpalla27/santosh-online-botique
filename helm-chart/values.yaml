@@ -380,7 +380,7 @@ configmap:
     PAYMENT_SERVICE_ADDR: "paymentservice:50052"
     EMAIL_SERVICE_ADDR: "emailservice:5000"
     CURRENCY_SERVICE_ADDR: "currencyservice:7000"
-    SHOPPING_ASSISTANT_SERVICE_ADDR: "shippingservice:50051"
+    SHOPPING_SERVICE_ADDR: "shippingservice:50051"
     CART_SERVICE_ADDR: "cartservice:7070"
     RECOMMENDATION_SERVICE_ADDR: "recommendationservice:8081"
     CHECKOUT_SERVICE_ADDR: "checkoutservice:5050"
