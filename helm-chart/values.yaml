@@ -682,13 +682,6 @@ recommendationservice:
     targetPort: 8080
     type: ClusterIP
 
-
-namespace: default
-
-serviceAccount:
-  name: online-botique
-
-
 shippingservice:
   name: shippingservice
   image: santoshpalla27/online-botique:shippingservice
