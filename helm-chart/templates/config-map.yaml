@@ -5,7 +5,7 @@ metadata:
 data:
   DISABLE_PROFILER: "{{ .Values.configmap.data.DISABLE_PROFILER }}"
   ENABLE_PROFILER: "{{ .Values.configmap.data.ENABLE_PROFILER }}"
-  REDIS_ADDR: "{{ .Values.configmap.data.REDIS_ADDR }}"
+  redis-addr: "{{ .Values.configmap.data.redis-addr }}"
   PRODUCT_CATALOG_SERVICE_ADDR: "{{ .Values.configmap.data.PRODUCT_CATALOG_SERVICE_ADDR }}"
   SHIPPING_SERVICE_ADDR: "{{ .Values.configmap.data.SHIPPING_SERVICE_ADDR }}"
   PAYMENT_SERVICE_ADDR: "{{ .Values.configmap.data.PAYMENT_SERVICE_ADDR }}"
